@@ -10,7 +10,7 @@ $ make
 You need to have
 [`make`](https://www.gnu.org/software/make/),
 [`aspell`](http://aspell.net/),
-LaTeX,
+[LaTeX](https://www.latex-project.org/),
 [`texsc`](https://rubygems.org/gems/texsc),
 and
 [`texqc`](https://rubygems.org/gems/texqc)
