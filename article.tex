@@ -1,0 +1,612 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{silence}
+  \WarningFilter*{latex}{Font shape `OT1/zi4/m/it' undefined}
+\usepackage[table]{xcolor} % to highlight rows in tables
+\usepackage[underline=true,rounded corners=false]{pgf-umlsd} % for UML sequence diagrams
+\usepackage{inconsolata} % for nicer TT font family
+\usepackage[square]{syntax} % for BNF grammar
+  \setlength{\grammarparsep}{1pt}
+  \setlength{\grammarindent}{2em}
+\usepackage{minted} % code snippets
+  \newminted{text}{linenos,samepage,frame=lines,numbersep=4pt,fontsize=\small}
+\usepackage{array} % complex structure of TABULAR-s
+\usepackage{paralist} % for inline itemized lists env{inparaenum}
+\usepackage{natbib} % for customization of bibliography headers
+\usepackage{adjustbox}
+  \newcommand{\code}[1]{\adjustbox{padding=3pt 1pt 3pt 1pt, cframe=gray!50, bgcolor=gray!10}{\texttt{#1}}}
+\usepackage{tikz}
+  \usetikzlibrary{shapes,arrows,shadows}
+  \usetikzlibrary{decorations.pathmorphing}
+  \usetikzlibrary{positioning,fit}
+  \usetikzlibrary{calc}
+\usepackage[hyperfootnotes=true,unicode]{hyperref} % hyper links
+  \hypersetup{colorlinks=false}
+
+\newcommand{\nospell}[1]{#1}
+
+\begin{document}
+\tolerance=1500
+\raggedbottom
+
+\title{Combining Object-Oriented Paradigm and Controlled Natural Language for Requirements Specification}
+\author{Yegor Bugayenko\\yegor256@gmail.com}
+\maketitle
+
+\begin{abstract} Natural language is the dominant form of writing software requirements.
+Its essential ambiguity causes inconsistency of requirements,
+which leads to scope creep. On the other hand, formal requirements
+specification notations such as Z, \nospell{Petri Nets}, SysML, and others are
+difficult to understand by non-technical project stakeholders. They often
+become a barrier between developers and requirements providers. The article
+presents a controlled natural language that looks like English but
+is a strongly typed object-oriented language compiled to
+UML/XMI. Thus, it is easily understood, at the same time, by non-technical
+people, programmers, and computers. Moreover, it is formally verifiable and
+testable. It was designed, developed, and tested in three commercial
+software projects in order to validate the assumption that object-oriented
+design can be applied to requirements engineering at the level of
+specifications writing. The article outlines key features of the language and summarizes
+the experience obtained during its practical application. \end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Software Requirements Specification (SRS) should be correct, unambiguous,
+complete, consistent, ranked for importance and/or stability, verifiable,
+modifiable, and traceable~\cite{ieee830}. Many times, it was proven that an SRS
+document that lacks some of these properties has a high likelihood of
+becoming a root cause of scope and schedule problems in a
+project~\cite{wiegers03,ears09,chen09}.
+
+Natural Language (NL) is the main presentation means in industrial
+requirements documents~\cite{kof10,sinha10}, mostly due to its flexibility.
+Very often, contributors to requirements specifications are not experts in
+requirements engineering (RE). Impreciseness and flexibility of NL, being
+its advantage in informal human communications, turns into a serious drawback
+in RE. Problems that appear in NL requirement documents include
+ambiguity, vagueness, complexity, duplication, wordiness, and
+\nospell{untestability}~\cite{ears09}.
+
+To overcome problems associated with NL, some experts advocate the use of
+other notations for the specification of requirements, such as
+Z~\cite{woodcock96}, SysML, UML~\cite{uml}, Petri Nets, and others. However,
+use of any of these non-textual notations often requires complex translation
+of the source requirements, which can introduce further errors. Such
+translation of requirements can serve to create an extra ``language
+barrier'' between developers and stakeholders. There is also a training
+overhead associated with the introduction of many notations~\cite{ears09}.
+
+A desired solution to the outlined problem would be a Controlled Natural
+Language (CNL), which would look like NL, but be precise,
+unambiguous, and consistent. A few CNLs were introduced and developed over
+the last decades. Closest to our work are Attempt to Controlled English
+(ACE)~\cite{ace06}, Simplified Technical English (STE)~\cite{ste05}, Easy
+Approach to Requirements Syntax (EARS)~\cite{ears09}, Boeing's Computer
+Processable Language~\cite{clark05}, and \nospell{Schwitter's Processable
+ENGlish}~\cite{peng}. However, there are a few critical drawbacks that exist,
+to some degree, in all of these CNLs.
+
+First, none can be mapped to objects hierarchy or a UML diagram.
+They are focused more on linguistic instead of object-oriented semantic.
+Some CNLs, like ACE, are based on first-order logic and can be mapped to
+Lisp or other functional languages. However, as of today, object-oriented
+systems dominate, especially in enterprise applications domain.
+
+Second, they all require sequential flow of language constructs, while in
+modern agile software projects wiki pages is the most popular storage for
+requirements documentation, instead of files or databases. Wiki pages, by
+definition, are not sorted and may contain pieces of requirements
+documentation that should be combined into a complete document in a random
+order.
+
+Third, most do not allow uncertainty, while requirements development
+and requirements management processes need to be able to mark
+requirements as uncertain (also known as ``TBD''). Requirements engineers
+need to have an ability to add a requirement into scope at one iteration
+and refine it later in a few iterations. This process, called ``progressive
+elaboration'' of requirements~\cite{pmbok4}, must be supported by a CNL.
+
+To overcome these drawbacks, a new language was introduced,
+implemented, and tested. Section~\ref{sec:Requs} of
+the article presents the language and gives a simple example of its use,
+specifying requirements of a sample software system.
+Section~\ref{sec:lexical} briefly outlines lexical rules of the language.
+Section~\ref{sec:syntax} describes the syntax using extended \nospell{Backus-Naur}
+form and gives a few practical examples. Section~\ref{sec:semantic} outlines
+a semantic layer of the compiler that is intended to detect vast majority
+of inconsistencies in a requirements document.
+Section~\ref{sec:uml} gives an example of to-UML mapping implemented
+by the compiler. Section~\ref{sec:ambiguity}
+presents a numeric metric that measures ambiguity in a requirements
+specification and could be used as a guidance for system analysts.
+Section~\ref{sec:results} presents empirical results obtained from three
+commercial Java web projects over the last few years.
+Section~\ref{sec:conclusion} presents conclusions and observations made by
+the author.
+
+\section{Controlled Natural Language}
+\label{sec:Requs}
+
+It is an object-oriented CNL that resembles English and, because of that,
+can be read and understood by compilers, system analysts, end-users, and
+business people. Fig.~\ref{fig:example} presents an example of a short
+requirements definition document that describes a calculator that asks its
+user for two floating point numbers and returns the result of their
+division.
+
+\begin{figure}
+\begin{textcode}
+SuD includes: user as User.
+Fraction is a "math calculator".
+Fraction needs:
+numerator as Float, and
+denominator as Float.
+UC1 where SuD divides two numbers:
+1. The user creates Fraction (a fraction);
+2. The fraction "calculates" Float (a quotient);
+3. The user "receives results" using the quotient.
+UC1/2 when "division by zero":
+1. The user "fails" using "can't divide by zero".
+\end{textcode}
+\caption{Software Requirements Specification of an example math calculator}
+\label{fig:example}
+\end{figure}
+
+The example has some uncertainty expressed with plain English text sentences
+in double quotes. This is an important feature that distinguishes the designed language from
+other CNLs. Every class and method may be specified either formally or
+by so-called ``informal'' text in double quotes. In NL requirements
+specifications, such uncertainties are usually marked with TBD (``to be
+determined'') placeholders~\cite{moynihan00}. Java equivalent of them are
+\code{TODO} comments. Informal texts in double quotes are also used to
+make references from functional requirements to customer needs, interface
+specifications, supplementary documents, etc.
+
+\code{SuD} (System under Development) is a top level class that encapsulates
+all other objects and may not be ``created'' (similar to a singleton in OOP).
+\code{Float} is a built-in class, as well as \code{Text}, \code{Integer}, and
+a few others. Classes have methods, which are defined as use cases with a
+single main flow and a few alternative flows~\cite{cockburn01}.
+
+In the example, use case \code{UC1} is a method of class \code{SuD} and its
+name is ``divides two numbers.'' Every flow step in a use case can either
+\begin{inparaenum}[\itshape a\upshape)] \item call other method, or \item
+create (instantiate) an object. \end{inparaenum} In the example, step
+\code{1} of \code{UC1} is creating a new object \code{fraction} of class
+\code{Fraction}, while step \code{2} is calling a method ``calculates'' of
+\code{fraction} in order to get back an object named \code{quotient} of
+class \code{Float}.
+
+Every clause ends with a period. Order of clauses is not important
+and this is yet another important feature of the language. In the example clause
+at the tenth line, defining an alternative flow may appear before the use
+case itself. The compiler will understand them correctly.
+
+Fig.~\ref{fig:java} contains a close equivalent program in Java.
+
+\begin{figure}
+\inputminted[linenos,samepage,frame=lines,numbersep=4pt,fontsize=\small]{java}{sample.java}
+\caption{Java equivalent of Requs requirements document from Fig.~\ref{fig:example}}
+\label{fig:java}
+\end{figure}
+
+Requs, in its current version, doesn't have any lexical/syntax constructs
+for non-functional requirements (NFRs) specification. This is a subject for
+future research and implementation. The biggest expected challenge in this area is
+inventing (or borrowing) a method of quantification of NFRs.
+
+\section{Lexical Analysis}
+\label{sec:lexical}
+
+There are a few main lexical terms in Requs, which can be
+defined by regular expressions:
+
+\begin{grammar}
+<class> ::= `[A-Z][A-Za-z]+'
+
+<word> ::= `[a-z]+'
+
+<use-case-ID> ::= `UC[0-9\\.]+'
+
+<flow-ID> ::= `[0-9]+'
+
+<informal> ::= `"([^"]|\\")+"'
+\end{grammar}
+
+In Fig.~\ref{fig:example}, \code{SuD}, \code{Fraction}, \code{Float}, and
+\code{User} are classes. They start with capital letters and contain only
+letters (both lowercase and capital). \code{user}, \code{fraction}, and
+\code{quotient} are variables bound to instances/objects of classes.
+
+Besides, there are a few reserved words, which may have special meaning in
+certain places of the text, including \code{the}, \code{a}, \code{includes},
+\code{requires}, etc. (A full list of them is defined below in Section~\ref{sec:syntax}.)
+
+\section{Syntax Analysis}
+\label{sec:syntax}
+
+A program consists of clauses (similar to statements in other
+languages). Every clause ends with a period, like English sentences. There
+are four types of clauses: class declaration, class construction, method
+declaration, and alternative flow declaration.
+
+\begin{grammar}
+<SRS> ::= <clause>+
+
+<clause> ::= <class-declaration> \\
+| <class-construction> \\
+| <method-declaration> \\
+| <alternative-flow-declaration>
+\end{grammar}
+
+\subsection{Class Declaration}
+
+Class declaration is a clause that declares a class as a sub-class of
+another class or as a standalone class. The central part of the clause is
+an \code{is a} term:
+
+\begin{grammar}
+<class-declaration> ::= <class> <is-a> <parent-class>
+
+<parent-class> ::= <informal> | <class>
+
+<is-a> ::= `is' ( `a' | `an' )
+\end{grammar}
+
+The second line in Fig.~\ref{fig:example} declares class \code{Fraction}
+without any super-class but with an informal description \code{"math
+calculator"}.
+
+\subsection{Class Construction}
+
+Class construction is a clause that defines arguments of a class
+constructor, if necessary. By default, a constructor doesn't need any
+arguments:
+
+\begin{grammar}
+<class-construction> ::= <class> <includes> `:' <slots>
+
+<includes> ::= `includes' | `needs'
+
+<slots> ::= <slot> ( `,' <slot> )*
+
+<slot> ::= <variable> ( `as' <class> )?
+
+<variable> ::= <word> `-s'?
+\end{grammar}
+
+Fig.~\ref{fig:example} defines constructor arguments only for
+\code{Fraction} class. Class \code{User} don't have any arguments. Class
+\code{SuD} is a pre-defined class without arguments. Class \code{Float} is a
+pre-defined class with one argument.
+
+Class without arguments in constructor normally means that it represents an
+entity outside of system scope, like \code{User}.
+
+Cardinality of associations between objects is configured by the \code{-s}
+prefix at the end of variable name. There are only
+two possible relationships types supported: one-to-one and one-to-many.
+
+\subsection{Method Declaration}
+
+Method declaration is a clause that defines a method for a class:
+
+\begin{grammar}
+<method-declaration> ::= <use-case-ID> `where' \\
+<class> <signature> `:' <flows>
+
+<signature> ::= ( <word>+ | <informal> ) \\
+<subject>? <using>?
+
+<subject> ::= <class> <binding>? | `the' <variable>
+
+<binding> ::= `(' `a' <variable> `)'
+
+<using> ::= `using' <subject> ( `and' <subject> )*
+
+<flows> ::= <flow> ( `;' <flow> )+
+
+<flow> ::= <flow-ID> `.' \\
+( `The' <variable> <signature>
+| `Fail' `since' <informal> )
+\end{grammar}
+
+For traceability, all methods have unique names across the entire
+SRS starting with \code{UC} (use case). In other words,
+methods are use cases owned by classes.
+
+\subsection{Alternative Flow Declaration}
+
+Alternative declaration is a clause that defines an alternative
+flow of a method:
+
+\begin{grammar}
+<alternative-flow-declaration> ::= <use-case-ID> `/' \\
+<flow-ID> `when' <informal> `:' <flows>
+\end{grammar}
+
+Alternative flow explains exceptional situations in one of the
+flows of a method it refers to.
+
+\section{Semantic Analysis}
+\label{sec:semantic}
+
+In the language, as in any pure object-oriented language, everything is
+an object. Objects are grouped into classes. They have only methods
+and no other public properties and may be bound to variables.
+It is a strongly typed language.
+
+The main goal of semantic analysis in the language is to make sure that:
+\begin{inparaenum}[\itshape a\upshape)]
+\item method calls match method declarations,
+\item object creating have necessary constructor arguments,
+\item variable bindings precede their usage,
+\item methods return objects of required classes, and
+\item failures are handled by alternative flows.
+\end{inparaenum}
+If any of these checks fail, the entire document is rejected.
+
+\subsection{Method calls match declarations}
+
+Every method call in every use case should either
+\begin{inparaenum}[\itshape a\upshape)]
+\item be informal (the 8th, 9th, and 11th lines in the example at Fig.~\ref{fig:example}),
+\item formally refer to the method declared in a class, or
+\item construct an instance of a class using a built-in method \code{creates} (the 7th line in the example).
+\end{inparaenum}
+
+By such a strict linking of use case flows and class methods, a consistency
+of the entire document is achieved. It is no longer possible to refer to
+some functionality in a use case, which doesn't exist. A rare mistake during
+the requirements development phase --- but very popular during requirements
+management and maintenance --- when one part of the document is updated aside
+from another part.
+
+\subsection{Object creating have necessary constructor arguments}
+
+Every time an object is instantiated using the \code{creates} method,
+the compiler checks that all required parameters of required classes are
+supplied. Again, it is a very important validation that prevents inconsistency
+during requirements maintenance and refinement. In the example, class
+\code{Fraction} requires two parameters to be instantiated. Any attempt to
+create a fraction with just one parameter or two parameters of classes other
+than \code{Float} would be rejected by the compiler.
+
+\subsection{Variable bindings precede their usage}
+
+A variable is declared and bound to its value by means of an article
+\code{a}. The seventh line of the example declares a variable
+\code{fraction}, which is later used with article \code{the} (the eighth
+line). If, by mistake, variable declaration is removed from the first step
+of the use case or the entire step is deleted, compilation will fail.
+Consistency of the document is ensured by this constraint.
+
+\subsection{Methods return objects of required classes}
+
+Similar to the check of parameter classes, every returned object is verified
+for compliance with the class expected. The eighth line of the example
+expects method ``calculates'' of class \code{Fraction} to return an object
+of class \code{Float}. The method is still informal and is not defined in
+the requirements document, but when a requirements expert decides to make it
+formal and specify its details in a new use case, she has to make sure it
+returns an instance of class \code{Float}. Otherwise, the compiler would
+complain with an error.
+
+\subsection{Failures are handled by alternative flows}
+
+Every method in the object-oriented way may throw an exception, using a
+build-in method \code{Fail since}. The method has one parameter of class
+\code{Text}, which explains the reason. In the example in
+Fig.~\ref{fig:example}, method ``calculates'' of class \code{Fraction} may
+throw an exception and it is handled by an alternative flow. In the language, all
+exceptions are checked, which means that they should be handled explicitly,
+by means of alternative flows of use cases.
+
+\section{UML and XMI}
+\label{sec:uml}
+\definecolor{body}{rgb}{1,1,0.8}
+\definecolor{border}{rgb}{0.6039,0,0.2}
+\tikzstyle{uml} = [align=left,fill=body,draw=border,font={\small\ttfamily}]
+\tikzstyle{uml-class} = [uml,text ragged,rectangle split,
+rectangle split parts=3,rectangle split empty part height=0em,
+rectangle split every empty part={}]
+\tikzstyle{comment} = [inner sep=0mm,fill=white,font={\scriptsize\ttfamily}]
+
+When semantic analysis is done the specification looks like an object of
+class \code{SuD} that encapsulates other objects and methods. This object
+hierarchy is convertible to UML diagrams~\cite{uml}. Specification in
+Fig.~\ref{fig:example} would be converted to the following UML diagrams
+(to save space, the list is limited to the three most interesting
+diagrams):
+
+\begin{itemize}
+\item Class diagram, in Fig.~\ref{fig:uml-class}
+\item Object diagram, in Fig.~\ref{fig:uml-object}
+\item Sequence diagram of ``divides two numbers'' method, in Fig.~\ref{fig:uml-seq}
+\end{itemize}
+
+\begin{figure}
+\begin{tikzpicture}[node distance=1em]
+\node[uml-class] (sud) {SuD\nodepart{third}divides two numbers};
+\node[uml-class,below right=of sud] {Float\nodepart{third}};
+\node[uml-class,below left=of sud] {User\nodepart{third}creates\\receives results\\fails};
+\node[uml-class,below=of sud] {Fraction\nodepart{third}calculates};
+\end{tikzpicture}
+\caption{UML class diagram for the sample project}
+\label{fig:uml-class}
+\end{figure}
+
+\begin{figure}
+\begin{tikzpicture}[node distance=2.5em]
+\node[uml] (sud) {\underline{:SuD}};
+\node[uml,below right=of sud] (user) {\underline{:User}};
+\node[uml,below left=6em of user] (fraction) {\underline{:Fraction}};
+\node[uml,below left=of fraction] (numerator) {\underline{:Float}};
+\node[uml,below right=of fraction] (denumerator) {\underline{:Float}};
+\node[uml,left=9em of user] (quotient) {\underline{:Float}};
+\path[draw,diamond-] (sud) -- node[midway,comment] {user} (user);
+\path[draw,diamond-] (fraction) -- node[midway,comment] {numerator} (numerator);
+\path[draw,diamond-] (fraction) -- node[midway,comment] {denumerator} (denumerator);
+\path[draw,->,dashed] (user) -- node[midway,comment] {creates} (fraction);
+\path[draw,->,dashed] (fraction) -- node[midway,comment] {calculates} (quotient);
+\path[draw,->,dashed] (quotient) -- node[midway,comment] {receives results} (user);
+\end{tikzpicture}
+\caption{UML object diagram for the sample project}
+\label{fig:uml-object}
+\end{figure}
+
+\begin{figure}
+\begin{sequencediagram}
+\tikzstyle{inststyle}=[uml,rectangle,draw,anchor=west,minimum width=1.6cm,align=center]
+\newthread{user}{user}
+\newinst[1]{fraction}{fraction}
+\newinst[1]{quotient}{quotient}
+\begin{messcall}{user}{create}{fraction}
+\begin{sdblock}{try/catch}{}
+\begin{call}{fraction}{calculates}{quotient}{quotient}
+\end{call}
+\begin{messcall}{fraction}{receives result}{user}
+\end{messcall}
+\begin{callself}{fraction}{division by zero}{}
+\end{callself}
+\begin{messcall}{fraction}{receive}{user}
+\end{messcall}
+\end{sdblock}
+\path [draw] (0.5,-4.7) -- (7,-4.7);
+\end{messcall}
+\end{sequencediagram}
+\caption{UML sequence diagram for ``divides two numbers'' method of class SuD of the sample project}
+\label{fig:uml-seq}
+\end{figure}
+
+Every UML diagram is a formal interoperable document in XMI~\cite{xmi} that
+can be rendered in web, in \LaTeX, in PDF, or translated to Java or any
+other object-oriented language. Fig.~\ref{fig:xmi} shows an example XMI
+for the class diagram.
+
+\begin{figure}
+\inputminted[linenos,samepage,frame=lines,numbersep=4pt,fontsize=\small]{xml}{sample.xmi}
+\caption{XMI representation of a UML diagram; a sample part}
+\label{fig:xmi}
+\end{figure}
+
+\section{Ambiguity}
+\label{sec:ambiguity}
+
+With this approach, ambiguity of requirements becomes a formally measurable metric.
+It is calculated as a division of informally defined methods to the total
+number of methods:
+
+\begin{equation}
+A = \frac{M_{\mbox{informal}}}{M_{\mbox{total}}},\quad 0 \le A \le 1
+\end{equation}
+
+In Fig.~\ref{fig:example}, ambiguity equals to $3/4$ since there are four
+methods in total and three of them are defined informally.
+
+A method is formally defined when its signature consists of one specially
+reserved verb \code{creates} and an optional list of constructor arguments,
+as in the seventh line of Fig.~\ref{fig:example}. A formally defined
+method doesn't have any ambiguity since it is absolutely clear what is
+expected as its input and output. All it does is instantiate a new object
+and bind it to a variable. In Java that would mean calling a constructor.
+
+The higher the ambiguity, the more system analysis is required for the
+requirements document to make it unambiguously understandable by everybody
+in a project. The ultimate goal of a system analyst is to break down
+requirements until a target ambiguity is reached. In the commercial projects
+explained in Section~\ref{sec:results}, the $A$ metric was used for the planning
+of RE activities. Every iteration a group of RE specialists had a goal of
+decreasing the ambiguity until it reached a given value. It was not clear at
+the beginning how much work that would take, but soon the RE team
+obtained that knowledge and became capable of estimating
+complexity of work using $A$ metric.
+
+For example, in one of the projects, a decrease of ambiguity from $0.86$ to
+$0.8$ took five working hours of a system analyst. During this work, eight
+tickets were produced for discussion, each of which took from one to three
+hours of work of requirements providers and other project stakeholders.
+Thus, a total estimate of 0.06 decrease of ambiguity costs approximately
+twenty hours of work. This is a very rough estimate and is applicable only
+to the project where it was measured, but in other projects it is possible
+to calculate similar metrics and manage RE activities according to them.
+
+It was empirically observed that an SRS document becomes acceptable for
+implementation and doesn't confuse programmers when its ambiguity is less
+than $0.7$. Of course, it is recommended to start implementation at earlier
+stages of a project, when ambiguity is rather higher, and generate requests
+for the RE team to improve SRS at certain places, where ambiguity has
+its peaks.
+
+\section{Empirical Results and Future Work}
+\label{sec:results}
+
+The language was used in three commercial projects. The numbers
+empirically collected are presented in Table~\ref{table:numbers}.
+
+\begin{table}
+\begin{tabular}{>{\raggedright}p{14em}rrr}
+                                            & $p_1$ & $p_2$ & $p_3$ \\
+\hline
+Total classes                                 & 39 & 12 & 19 \\
+Total methods                                 & 19 & 7 & 24 \\
+Total Java classes                                  & 80 & 75 & 295 \\
+\rowcolor{lightgray!50}
+Ambiguity achieved                                  & 0.80 & 0.95 & 0.68 \\
+Work spent on RE, staff-months                      & 0.53 & 0.21 & 0.86 \\
+Total SRS contributors                              & 4 & 7 & 2 \\
+Non-empty lines of Java code                        & 9.5K & 10K & 32K \\
+Project duration, months                            & 7 & 26 & 11 \\
+Project budget, staff-months                        & 5.5 & 7.5 & 9.5 \\
+\hline
+\end{tabular}
+\caption{Empirically collected data from three commercial projects}
+\label{table:numbers}
+\end{table}
+
+The results collected from three software projects demonstrated that
+combining object-oriented paradigm with a CNL makes it possible to
+specify software requirements in a predictable and verifiable manner. The
+quality of requirements documentation was higher than in previously
+developed projects, according to the estimates of defects reported during
+project development and release phases.
+
+It seems reasonable to analyze the effectiveness of the created CNL on
+a larger number of projects, including open source ones. In order to make
+such an analysis a methodology would have to be designed, to compare
+the effectiveness of different methods of requirements specification
+and identifying the advantages and disadvantages of each one.
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+A few important observations were made during commercial usage of the language.
+First, SRS document is much shorter than discussions around it (usually kept
+in bug tracking ``tickets''). It takes days to discuss one small change in a
+class and just a few minutes to apply the change. Because of that, a
+traceability from SRS to discussion tickets is an important feature that
+has to be supported by a documentation management software. It is crucial
+to have an ability to trace back every requirement and remember
+the reasons behind it.
+
+Second, complete and detailed error reporting is an important aspect of
+the compiler. Initial versions of it had a technical and simplistic
+errors reporting mechanism that didn't give enough information to system
+analysts and business owners. They were confused trying to edit a part of
+SRS in one of wiki pages and receiving a message like ``incorrect syntax on
+line 45.'' Such situations required immediate attention from
+programmers. Soon it became obvious that the compiler, unlike
+programmers-oriented compilers of Java or C++, has to produce user friendly
+error messages (and warnings). In further versions of the language, a much richer
+reporting is going to be implemented.
+
+Third, developing a requirements specification with the language requires RE
+engineers to understand key principles of ``object thinking''~\cite{west04},
+like ``everything is an object'' and ``objects expose behavior, not state.''
+Initial training was required in two projects.
+
+\bibliographystyle{abbrv}
+\bibliography{main}
+
+\end{document}
