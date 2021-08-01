@@ -1,38 +1,26 @@
-\documentclass[conference]{IEEEtran}
-\usepackage[utf8]{inputenc}
-\usepackage{silence}
-  \WarningFilter*{latex}{Font shape `OT1/zi4/m/it' undefined}
-\usepackage[table]{xcolor} % to highlight rows in tables
+\documentclass[sigplan,10pt,nonacm=true]{acmart}
+\settopmatter{printfolios=false,printccs=false,printacmref=false}
 \usepackage[underline=true,rounded corners=false]{pgf-umlsd} % for UML sequence diagrams
-\usepackage{inconsolata} % for nicer TT font family
 \usepackage[square]{syntax} % for BNF grammar
   \setlength{\grammarparsep}{1pt}
   \setlength{\grammarindent}{2em}
-\usepackage{minted} % code snippets
-  \newminted{text}{linenos,samepage,frame=lines,numbersep=4pt,fontsize=\small}
 \usepackage{array} % complex structure of TABULAR-s
 \usepackage{paralist} % for inline itemized lists env{inparaenum}
 \usepackage{natbib} % for customization of bibliography headers
-\usepackage{adjustbox}
-  \newcommand{\code}[1]{\adjustbox{padding=3pt 1pt 3pt 1pt, cframe=gray!50, bgcolor=gray!10}{\texttt{#1}}}
+\usepackage{ffcode}
 \usepackage{tikz}
   \usetikzlibrary{shapes,arrows,shadows}
   \usetikzlibrary{decorations.pathmorphing}
   \usetikzlibrary{positioning,fit}
   \usetikzlibrary{calc}
-\usepackage[hyperfootnotes=true,unicode]{hyperref} % hyper links
-  \hypersetup{colorlinks=false}
+\usepackage{href-ul} % hyper links
 
 \newcommand{\nospell}[1]{#1}
 
 \begin{document}
-\tolerance=1500
-\raggedbottom
 
 \title{Combining Object-Oriented Paradigm and Controlled Natural Language for Requirements Specification}
 \author{Yegor Bugayenko\\yegor256@gmail.com}
-\maketitle
-
 \begin{abstract} Natural language is the dominant form of writing software requirements.
 Its essential ambiguity causes inconsistency of requirements,
 which leads to scope creep. On the other hand, formal requirements
@@ -48,43 +36,44 @@ software projects in order to validate the assumption that object-oriented
 design can be applied to requirements engineering at the level of
 specifications writing. The article outlines key features of the language and summarizes
 the experience obtained during its practical application. \end{abstract}
+\maketitle
 
 \section{Introduction}
 \label{sec:intro}
 
 Software Requirements Specification (SRS) should be correct, unambiguous,
 complete, consistent, ranked for importance and/or stability, verifiable,
-modifiable, and traceable~\cite{ieee830}. Many times, it was proven that an SRS
+modifiable, and traceable~\citep{ieee830}. Many times, it was proven that an SRS
 document that lacks some of these properties has a high likelihood of
 becoming a root cause of scope and schedule problems in a
-project~\cite{wiegers03,ears09,chen09}.
+project~\citep{wiegers03,ears09,chen09}.
 
 Natural Language (NL) is the main presentation means in industrial
-requirements documents~\cite{kof10,sinha10}, mostly due to its flexibility.
+requirements documents~\citep{kof10,sinha10}, mostly due to its flexibility.
 Very often, contributors to requirements specifications are not experts in
 requirements engineering (RE). Impreciseness and flexibility of NL, being
 its advantage in informal human communications, turns into a serious drawback
 in RE. Problems that appear in NL requirement documents include
 ambiguity, vagueness, complexity, duplication, wordiness, and
-\nospell{untestability}~\cite{ears09}.
+\nospell{untestability}~\citep{ears09}.
 
 To overcome problems associated with NL, some experts advocate the use of
 other notations for the specification of requirements, such as
-Z~\cite{woodcock96}, SysML, UML~\cite{uml}, Petri Nets, and others. However,
+Z~\citep{woodcock96}, SysML, UML~\citep{uml}, Petri Nets, and others. However,
 use of any of these non-textual notations often requires complex translation
 of the source requirements, which can introduce further errors. Such
 translation of requirements can serve to create an extra ``language
 barrier'' between developers and stakeholders. There is also a training
-overhead associated with the introduction of many notations~\cite{ears09}.
+overhead associated with the introduction of many notations~\citep{ears09}.
 
 A desired solution to the outlined problem would be a Controlled Natural
 Language (CNL), which would look like NL, but be precise,
 unambiguous, and consistent. A few CNLs were introduced and developed over
 the last decades. Closest to our work are Attempt to Controlled English
-(ACE)~\cite{ace06}, Simplified Technical English (STE)~\cite{ste05}, Easy
-Approach to Requirements Syntax (EARS)~\cite{ears09}, Boeing's Computer
-Processable Language~\cite{clark05}, and \nospell{Schwitter's Processable
-ENGlish}~\cite{peng}. However, there are a few critical drawbacks that exist,
+(ACE)~\citep{ace06}, Simplified Technical English (STE)~\citep{ste05}, Easy
+Approach to Requirements Syntax (EARS)~\citep{ears09}, Boeing's Computer
+Processable Language~\citep{clark05}, and \nospell{Schwitter's Processable
+ENGlish}~\citep{peng}. However, there are a few critical drawbacks that exist,
 to some degree, in all of these CNLs.
 
 First, none can be mapped to objects hierarchy or a UML diagram.
@@ -105,7 +94,7 @@ and requirements management processes need to be able to mark
 requirements as uncertain (also known as ``TBD''). Requirements engineers
 need to have an ability to add a requirement into scope at one iteration
 and refine it later in a few iterations. This process, called ``progressive
-elaboration'' of requirements~\cite{pmbok4}, must be supported by a CNL.
+elaboration'' of requirements~\citep{pmbok4}, must be supported by a CNL.
 
 To overcome these drawbacks, a new language was introduced,
 implemented, and tested. Section~\ref{sec:Requs} of
@@ -130,13 +119,13 @@ the author.
 
 It is an object-oriented CNL that resembles English and, because of that,
 can be read and understood by compilers, system analysts, end-users, and
-business people. Fig.~\ref{fig:example} presents an example of a short
+business people. The Fig.~\ref{fig:example} presents an example of a short
 requirements definition document that describes a calculator that asks its
 user for two floating point numbers and returns the result of their
 division.
 
 \begin{figure}
-\begin{textcode}
+\begin{ffcode}
 SuD includes: user as User.
 Fraction is a "math calculator".
 Fraction needs:
@@ -144,11 +133,14 @@ numerator as Float, and
 denominator as Float.
 UC1 where SuD divides two numbers:
 1. The user creates Fraction (a fraction);
-2. The fraction "calculates" Float (a quotient);
-3. The user "receives results" using the quotient.
+2. The fraction "calculates" Float
+  (a quotient);
+3. The user "receives results" using
+  the quotient.
 UC1/2 when "division by zero":
-1. The user "fails" using "can't divide by zero".
-\end{textcode}
+1. The user "fails" using "can't
+  divide by zero".
+\end{ffcode}
 \caption{Software Requirements Specification of an example math calculator}
 \label{fig:example}
 \end{figure}
@@ -158,36 +150,70 @@ in double quotes. This is an important feature that distinguishes the designed l
 other CNLs. Every class and method may be specified either formally or
 by so-called ``informal'' text in double quotes. In NL requirements
 specifications, such uncertainties are usually marked with TBD (``to be
-determined'') placeholders~\cite{moynihan00}. Java equivalent of them are
-\code{TODO} comments. Informal texts in double quotes are also used to
+determined'') placeholders~\citep{moynihan00}. Java equivalent of them are
+\ff{TODO} comments. Informal texts in double quotes are also used to
 make references from functional requirements to customer needs, interface
 specifications, supplementary documents, etc.
 
-\code{SuD} (System under Development) is a top level class that encapsulates
+\ff{SuD} (System under Development) is a top level class that encapsulates
 all other objects and may not be ``created'' (similar to a singleton in OOP).
-\code{Float} is a built-in class, as well as \code{Text}, \code{Integer}, and
+\ff{Float} is a built-in class, as well as \ff{Text}, \ff{Integer}, and
 a few others. Classes have methods, which are defined as use cases with a
-single main flow and a few alternative flows~\cite{cockburn01}.
+single main flow and a few alternative flows~\citep{cockburn01}.
 
-In the example, use case \code{UC1} is a method of class \code{SuD} and its
+In the example, use case \ff{UC1} is a method of class \ff{SuD} and its
 name is ``divides two numbers.'' Every flow step in a use case can either
 \begin{inparaenum}[\itshape a\upshape)] \item call other method, or \item
 create (instantiate) an object. \end{inparaenum} In the example, step
-\code{1} of \code{UC1} is creating a new object \code{fraction} of class
-\code{Fraction}, while step \code{2} is calling a method ``calculates'' of
-\code{fraction} in order to get back an object named \code{quotient} of
-class \code{Float}.
+\ff{1} of \ff{UC1} is creating a new object \ff{fraction} of class
+\ff{Fraction}, while step \ff{2} is calling a method ``calculates'' of
+\ff{fraction} in order to get back an object named \ff{quotient} of
+class \ff{Float}.
 
 Every clause ends with a period. Order of clauses is not important
 and this is yet another important feature of the language. In the example clause
 at the tenth line, defining an alternative flow may appear before the use
 case itself. The compiler will understand them correctly.
 
-Fig.~\ref{fig:java} contains a close equivalent program in Java.
+The Fig.~\ref{fig:java} contains a close equivalent program in Java.
 
 \begin{figure}
-\inputminted[linenos,samepage,frame=lines,numbersep=4pt,fontsize=\small]{java}{sample.java}
-\caption{Java equivalent of Requs requirements document from Fig.~\ref{fig:example}}
+\begin{ffcode}
+class User {
+  Fraction createsFraction() {
+  }
+  void receivesResult(Float quotient) {
+  }
+  void fails(String message) {
+  }
+}
+class Fraction {
+  private final float numerator;
+  private final float denumerator;
+  Fraction(float num, float denum) {
+    this.numerator = num;
+    this.denumerator = denum;
+  }
+  Float quotient() throws DivisionByZero {
+  }
+}
+class SuD {
+  private final User user;
+  void dividesTwoNumbers() {
+    Fraction fraction = this.user.createsFraction();
+    try {
+      this.user.receivesResult(
+        fraction.quotient()
+      );
+    } catch (DivisionByZero ex) {
+      this.user.fails(
+        "denominator can't be zero"
+      );
+    }
+  }
+}
+\end{ffcode}
+\caption{Java equivalent of Requs requirements document from the Fig.~\ref{fig:example}}
 \label{fig:java}
 \end{figure}
 
@@ -214,14 +240,14 @@ defined by regular expressions:
 <informal> ::= `"([^"]|\\")+"'
 \end{grammar}
 
-In Fig.~\ref{fig:example}, \code{SuD}, \code{Fraction}, \code{Float}, and
-\code{User} are classes. They start with capital letters and contain only
-letters (both lowercase and capital). \code{user}, \code{fraction}, and
-\code{quotient} are variables bound to instances/objects of classes.
+In the Fig.~\ref{fig:example}, \ff{SuD}, \ff{Fraction}, \ff{Float}, and
+\ff{User} are classes. They start with capital letters and contain only
+letters (both lowercase and capital). \ff{user}, \ff{fraction}, and
+\ff{quotient} are variables bound to instances/objects of classes.
 
 Besides, there are a few reserved words, which may have special meaning in
-certain places of the text, including \code{the}, \code{a}, \code{includes},
-\code{requires}, etc. (A full list of them is defined below in Section~\ref{sec:syntax}.)
+certain places of the text, including \ff{the}, \ff{a}, \ff{includes},
+\ff{requires}, etc. (A full list of them is defined below in Section~\ref{sec:syntax}.)
 
 \section{Syntax Analysis}
 \label{sec:syntax}
@@ -244,7 +270,7 @@ declaration, and alternative flow declaration.
 
 Class declaration is a clause that declares a class as a sub-class of
 another class or as a standalone class. The central part of the clause is
-an \code{is a} term:
+an \ff{is a} term:
 
 \begin{grammar}
 <class-declaration> ::= <class> <is-a> <parent-class>
@@ -254,9 +280,9 @@ an \code{is a} term:
 <is-a> ::= `is' ( `a' | `an' )
 \end{grammar}
 
-The second line in Fig.~\ref{fig:example} declares class \code{Fraction}
-without any super-class but with an informal description \code{"math
-calculator"}.
+The second line in the the Fig.~\ref{fig:example} declares class \ff{Fraction}
+without any super-class but with an informal description
+\ff{"math calculator"}.
 
 \subsection{Class Construction}
 
@@ -276,15 +302,15 @@ arguments:
 <variable> ::= <word> `-s'?
 \end{grammar}
 
-Fig.~\ref{fig:example} defines constructor arguments only for
-\code{Fraction} class. Class \code{User} don't have any arguments. Class
-\code{SuD} is a pre-defined class without arguments. Class \code{Float} is a
+The Fig.~\ref{fig:example} defines constructor arguments only for
+\ff{Fraction} class. Class \ff{User} don't have any arguments. Class
+\ff{SuD} is a pre-defined class without arguments. Class \ff{Float} is a
 pre-defined class with one argument.
 
 Class without arguments in constructor normally means that it represents an
-entity outside of system scope, like \code{User}.
+entity outside of system scope, like \ff{User}.
 
-Cardinality of associations between objects is configured by the \code{-s}
+Cardinality of associations between objects is configured by the \ff{-s}
 prefix at the end of variable name. There are only
 two possible relationships types supported: one-to-one and one-to-many.
 
@@ -313,7 +339,7 @@ Method declaration is a clause that defines a method for a class:
 \end{grammar}
 
 For traceability, all methods have unique names across the entire
-SRS starting with \code{UC} (use case). In other words,
+SRS starting with \ff{UC} (use case). In other words,
 methods are use cases owned by classes.
 
 \subsection{Alternative Flow Declaration}
@@ -351,9 +377,9 @@ If any of these checks fail, the entire document is rejected.
 
 Every method call in every use case should either
 \begin{inparaenum}[\itshape a\upshape)]
-\item be informal (the 8th, 9th, and 11th lines in the example at Fig.~\ref{fig:example}),
+\item be informal (the 8th, 9th, and 11th lines in the example at the Fig.~\ref{fig:example}),
 \item formally refer to the method declared in a class, or
-\item construct an instance of a class using a built-in method \code{creates} (the 7th line in the example).
+\item construct an instance of a class using a built-in method \ff{creates} (the 7th line in the example).
 \end{inparaenum}
 
 By such a strict linking of use case flows and class methods, a consistency
@@ -365,19 +391,19 @@ from another part.
 
 \subsection{Object creating have necessary constructor arguments}
 
-Every time an object is instantiated using the \code{creates} method,
+Every time an object is instantiated using the \ff{creates} method,
 the compiler checks that all required parameters of required classes are
 supplied. Again, it is a very important validation that prevents inconsistency
 during requirements maintenance and refinement. In the example, class
-\code{Fraction} requires two parameters to be instantiated. Any attempt to
+\ff{Fraction} requires two parameters to be instantiated. Any attempt to
 create a fraction with just one parameter or two parameters of classes other
-than \code{Float} would be rejected by the compiler.
+than \ff{Float} would be rejected by the compiler.
 
 \subsection{Variable bindings precede their usage}
 
 A variable is declared and bound to its value by means of an article
-\code{a}. The seventh line of the example declares a variable
-\code{fraction}, which is later used with article \code{the} (the eighth
+\ff{a}. The seventh line of the example declares a variable
+\ff{fraction}, which is later used with article \ff{the} (the eighth
 line). If, by mistake, variable declaration is removed from the first step
 of the use case or the entire step is deleted, compilation will fail.
 Consistency of the document is ensured by this constraint.
@@ -386,19 +412,19 @@ Consistency of the document is ensured by this constraint.
 
 Similar to the check of parameter classes, every returned object is verified
 for compliance with the class expected. The eighth line of the example
-expects method ``calculates'' of class \code{Fraction} to return an object
-of class \code{Float}. The method is still informal and is not defined in
+expects method ``calculates'' of class \ff{Fraction} to return an object
+of class \ff{Float}. The method is still informal and is not defined in
 the requirements document, but when a requirements expert decides to make it
 formal and specify its details in a new use case, she has to make sure it
-returns an instance of class \code{Float}. Otherwise, the compiler would
+returns an instance of class \ff{Float}. Otherwise, the compiler would
 complain with an error.
 
 \subsection{Failures are handled by alternative flows}
 
 Every method in the object-oriented way may throw an exception, using a
-build-in method \code{Fail since}. The method has one parameter of class
-\code{Text}, which explains the reason. In the example in
-Fig.~\ref{fig:example}, method ``calculates'' of class \code{Fraction} may
+build-in method \ff{Fail since}. The method has one parameter of class
+\ff{Text}, which explains the reason. In the example in
+the Fig.~\ref{fig:example}, method ``calculates'' of class \ff{Fraction} may
 throw an exception and it is handled by an alternative flow. In the language, all
 exceptions are checked, which means that they should be handled explicitly,
 by means of alternative flows of use cases.
@@ -414,16 +440,16 @@ rectangle split every empty part={}]
 \tikzstyle{comment} = [inner sep=0mm,fill=white,font={\scriptsize\ttfamily}]
 
 When semantic analysis is done the specification looks like an object of
-class \code{SuD} that encapsulates other objects and methods. This object
-hierarchy is convertible to UML diagrams~\cite{uml}. Specification in
-Fig.~\ref{fig:example} would be converted to the following UML diagrams
+class \ff{SuD} that encapsulates other objects and methods. This object
+hierarchy is convertible to UML diagrams~\citep{uml}. Specification in
+the Fig.~\ref{fig:example} would be converted to the following UML diagrams
 (to save space, the list is limited to the three most interesting
 diagrams):
 
 \begin{itemize}
-\item Class diagram, in Fig.~\ref{fig:uml-class}
-\item Object diagram, in Fig.~\ref{fig:uml-object}
-\item Sequence diagram of ``divides two numbers'' method, in Fig.~\ref{fig:uml-seq}
+\item Class diagram, in the Fig.~\ref{fig:uml-class}
+\item Object diagram, in the Fig.~\ref{fig:uml-object}
+\item Sequence diagram of ``divides two numbers'' method, in the Fig.~\ref{fig:uml-seq}
 \end{itemize}
 
 \begin{figure}
@@ -480,13 +506,37 @@ diagrams):
 \label{fig:uml-seq}
 \end{figure}
 
-Every UML diagram is a formal interoperable document in XMI~\cite{xmi} that
+Every UML diagram is a formal interoperable document in XMI~\citep{xmi} that
 can be rendered in web, in \LaTeX, in PDF, or translated to Java or any
-other object-oriented language. Fig.~\ref{fig:xmi} shows an example XMI
+other object-oriented language. The Fig.~\ref{fig:xmi} shows an example XMI
 for the class diagram.
 
 \begin{figure}
-\inputminted[linenos,samepage,frame=lines,numbersep=4pt,fontsize=\small]{xml}{sample.xmi}
+\begin{ffcode}
+<uml:Model xmi:version="2.1"
+  xmlns:uml
+    ="http://www.eclipse.org/uml2/2.0.0/UML"
+  xmlns:xmi
+    ="http://schema.omg.org/spec/XMI/2.1">
+  <packagedElement name="SuD"
+    xmi:type="uml:Class">
+    <ownedOperation name="divides two numbers"
+      xmi:type="uml:Operation">
+      <ownedParameter direction="return"
+        xmi:type="uml:Parameter"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement name="User"
+    xmi:type="uml:Class">
+    <ownedOperation name="creates fraction"
+      xmi:type="uml:Operation">
+      <ownedParameter direction="return"
+        xmi:type="uml:Parameter"/>
+    </ownedOperation>
+  </packagedElement>
+  [...]
+</uml:Model>
+\end{ffcode}
 \caption{XMI representation of a UML diagram; a sample part}
 \label{fig:xmi}
 \end{figure}
@@ -502,12 +552,12 @@ number of methods:
 A = \frac{M_{\mbox{informal}}}{M_{\mbox{total}}},\quad 0 \le A \le 1
 \end{equation}
 
-In Fig.~\ref{fig:example}, ambiguity equals to $3/4$ since there are four
+In the Fig.~\ref{fig:example}, ambiguity equals to $3/4$ since there are four
 methods in total and three of them are defined informally.
 
 A method is formally defined when its signature consists of one specially
-reserved verb \code{creates} and an optional list of constructor arguments,
-as in the seventh line of Fig.~\ref{fig:example}. A formally defined
+reserved verb \ff{creates} and an optional list of constructor arguments,
+as in the seventh line of the Fig.~\ref{fig:example}. A formally defined
 method doesn't have any ambiguity since it is absolutely clear what is
 expected as its input and output. All it does is instantiate a new object
 and bind it to a variable. In Java that would mean calling a constructor.
@@ -552,7 +602,6 @@ empirically collected are presented in Table~\ref{table:numbers}.
 Total classes                                 & 39 & 12 & 19 \\
 Total methods                                 & 19 & 7 & 24 \\
 Total Java classes                                  & 80 & 75 & 295 \\
-\rowcolor{lightgray!50}
 Ambiguity achieved                                  & 0.80 & 0.95 & 0.68 \\
 Work spent on RE, staff-months                      & 0.53 & 0.21 & 0.86 \\
 Total SRS contributors                              & 4 & 7 & 2 \\
@@ -602,7 +651,7 @@ error messages (and warnings). In further versions of the language, a much riche
 reporting is going to be implemented.
 
 Third, developing a requirements specification with the language requires RE
-engineers to understand key principles of ``object thinking''~\cite{west04},
+engineers to understand key principles of ``object thinking''~\citep{west04},
 like ``everything is an object'' and ``objects expose behavior, not state.''
 Initial training was required in two projects.
 
