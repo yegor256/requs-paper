@@ -13,9 +13,11 @@
   \usetikzlibrary{decorations.pathmorphing}
   \usetikzlibrary{positioning,fit}
   \usetikzlibrary{calc}
-\usepackage{href-ul} % hyper links
 
 \newcommand{\nospell}[1]{#1}
+\setlength\headheight{24pt}
+\newcommand\figcaption[1]{\Description{#1}\caption{#1}}
+\raggedbottom
 
 \begin{document}
 
@@ -97,21 +99,22 @@ and refine it later in a few iterations. This process, called ``progressive
 elaboration'' of requirements~\citep{pmbok4}, must be supported by a CNL.
 
 To overcome these drawbacks, a new language was introduced,
-implemented, and tested. Section~\ref{sec:Requs} of
+implemented, and tested. The Sec.~\ref{sec:Requs} of
 the article presents the language and gives a simple example of its use,
 specifying requirements of a sample software system.
-Section~\ref{sec:lexical} briefly outlines lexical rules of the language.
-Section~\ref{sec:syntax} describes the syntax using extended \nospell{Backus-Naur}
-form and gives a few practical examples. Section~\ref{sec:semantic} outlines
+The Sec.~\ref{sec:lexical} briefly outlines lexical rules of the language.
+The Sec.~\ref{sec:syntax} describes the syntax using extended \nospell{Backus-Naur}
+form and gives a few practical examples. The Sec.~\ref{sec:semantic} outlines
 a semantic layer of the compiler that is intended to detect vast majority
 of inconsistencies in a requirements document.
-Section~\ref{sec:uml} gives an example of to-UML mapping implemented
-by the compiler. Section~\ref{sec:ambiguity}
+The Sec.~\ref{sec:uml} gives an example of to-UML mapping implemented
+by the compiler.
+The Sec.~\ref{sec:ambiguity}
 presents a numeric metric that measures ambiguity in a requirements
 specification and could be used as a guidance for system analysts.
-Section~\ref{sec:results} presents empirical results obtained from three
+The Sec.~\ref{sec:results} presents empirical results obtained from three
 commercial Java web projects over the last few years.
-Section~\ref{sec:conclusion} presents conclusions and observations made by
+The Sec.~\ref{sec:conclusion} presents conclusions and observations made by
 the author.
 
 \section{Controlled Natural Language}
@@ -141,7 +144,7 @@ UC1/2 when "division by zero":
 1. The user "fails" using "can't
   divide by zero".
 \end{ffcode}
-\caption{Software Requirements Specification of an example math calculator}
+\figcaption{Software Requirements Specification of an example math calculator}
 \label{fig:example}
 \end{figure}
 
@@ -157,18 +160,18 @@ specifications, supplementary documents, etc.
 
 \ff{SuD} (System under Development) is a top level class that encapsulates
 all other objects and may not be ``created'' (similar to a singleton in OOP).
-\ff{Float} is a built-in class, as well as \ff{Text}, \ff{Integer}, and
+The \ff{Float} is a built-in class, as well as the \ff{Text}, the \ff{Integer}, and
 a few others. Classes have methods, which are defined as use cases with a
 single main flow and a few alternative flows~\citep{cockburn01}.
 
-In the example, use case \ff{UC1} is a method of class \ff{SuD} and its
+In the example, the use case \ff{UC1} is a method of the class \ff{SuD} and its
 name is ``divides two numbers.'' Every flow step in a use case can either
 \begin{inparaenum}[\itshape a\upshape)] \item call other method, or \item
-create (instantiate) an object. \end{inparaenum} In the example, step
-\ff{1} of \ff{UC1} is creating a new object \ff{fraction} of class
-\ff{Fraction}, while step \ff{2} is calling a method ``calculates'' of
-\ff{fraction} in order to get back an object named \ff{quotient} of
-class \ff{Float}.
+create (instantiate) an object. \end{inparaenum} In the example, the step
+\ff{1} of the \ff{UC1} is creating a new object \ff{fraction} of the class
+\ff{Fraction}, while the step \ff{2} is calling a method ``calculates'' of
+the \ff{fraction} in order to get back an object named \ff{quotient} of
+the class \ff{Float}.
 
 Every clause ends with a period. Order of clauses is not important
 and this is yet another important feature of the language. In the example clause
@@ -180,12 +183,9 @@ The Fig.~\ref{fig:java} contains a close equivalent program in Java.
 \begin{figure}
 \begin{ffcode}
 class User {
-  Fraction createsFraction() {
-  }
-  void receivesResult(Float quotient) {
-  }
-  void fails(String message) {
-  }
+  Fraction createsFraction() {}
+  void receivesResult(Float quotient) {}
+  void fails(String message) {}
 }
 class Fraction {
   private final float numerator;
@@ -200,7 +200,8 @@ class Fraction {
 class SuD {
   private final User user;
   void dividesTwoNumbers() {
-    Fraction fraction = this.user.createsFraction();
+    Fraction fraction =
+      this.user.createsFraction();
     try {
       this.user.receivesResult(
         fraction.quotient()
@@ -213,11 +214,11 @@ class SuD {
   }
 }
 \end{ffcode}
-\caption{Java equivalent of Requs requirements document from the Fig.~\ref{fig:example}}
+\figcaption{Java equivalent of Requs requirements document from the Fig.~\ref{fig:example}}
 \label{fig:java}
 \end{figure}
 
-Requs, in its current version, doesn't have any lexical/syntax constructs
+Requs, in its current version, doesn't have any lexical or syntax constructs
 for non-functional requirements (NFRs) specification. This is a subject for
 future research and implementation. The biggest expected challenge in this area is
 inventing (or borrowing) a method of quantification of NFRs.
@@ -240,14 +241,15 @@ defined by regular expressions:
 <informal> ::= `"([^"]|\\")+"'
 \end{grammar}
 
-In the Fig.~\ref{fig:example}, \ff{SuD}, \ff{Fraction}, \ff{Float}, and
+In the Fig.~\ref{fig:example}, the entities \ff{SuD}, \ff{Fraction}, \ff{Float}, and
 \ff{User} are classes. They start with capital letters and contain only
-letters (both lowercase and capital). \ff{user}, \ff{fraction}, and
-\ff{quotient} are variables bound to instances/objects of classes.
+letters (both lowercase and capital). The \ff{user}, the \ff{fraction}, and
+the \ff{quotient} are the variables bound to instances of classes.
 
 Besides, there are a few reserved words, which may have special meaning in
 certain places of the text, including \ff{the}, \ff{a}, \ff{includes},
-\ff{requires}, etc. (A full list of them is defined below in Section~\ref{sec:syntax}.)
+\ff{requires}, etc.
+A full list of them is defined below in the Sec.~\ref{sec:syntax}.
 
 \section{Syntax Analysis}
 \label{sec:syntax}
@@ -280,7 +282,7 @@ an \ff{is a} term:
 <is-a> ::= `is' ( `a' | `an' )
 \end{grammar}
 
-The second line in the the Fig.~\ref{fig:example} declares class \ff{Fraction}
+The second line in the Fig.~\ref{fig:example} declares the class \ff{Fraction}
 without any super-class but with an informal description
 \ff{"math calculator"}.
 
@@ -303,12 +305,12 @@ arguments:
 \end{grammar}
 
 The Fig.~\ref{fig:example} defines constructor arguments only for
-\ff{Fraction} class. Class \ff{User} don't have any arguments. Class
-\ff{SuD} is a pre-defined class without arguments. Class \ff{Float} is a
+the \ff{Fraction} class. The class \ff{User} don't have any arguments. The class
+\ff{SuD} is a pre-defined class without arguments. The class \ff{Float} is a
 pre-defined class with one argument.
 
 Class without arguments in constructor normally means that it represents an
-entity outside of system scope, like \ff{User}.
+entity outside of system scope, like the \ff{User}.
 
 Cardinality of associations between objects is configured by the \ff{-s}
 prefix at the end of variable name. There are only
@@ -339,7 +341,7 @@ Method declaration is a clause that defines a method for a class:
 \end{grammar}
 
 For traceability, all methods have unique names across the entire
-SRS starting with \ff{UC} (use case). In other words,
+SRS starting with the \ff{UC} (use case). In other words,
 methods are use cases owned by classes.
 
 \subsection{Alternative Flow Declaration}
@@ -397,7 +399,7 @@ supplied. Again, it is a very important validation that prevents inconsistency
 during requirements maintenance and refinement. In the example, class
 \ff{Fraction} requires two parameters to be instantiated. Any attempt to
 create a fraction with just one parameter or two parameters of classes other
-than \ff{Float} would be rejected by the compiler.
+than the \ff{Float} would be rejected by the compiler.
 
 \subsection{Variable bindings precede their usage}
 
@@ -412,19 +414,19 @@ Consistency of the document is ensured by this constraint.
 
 Similar to the check of parameter classes, every returned object is verified
 for compliance with the class expected. The eighth line of the example
-expects method ``calculates'' of class \ff{Fraction} to return an object
+expects method ``calculates'' of the class \ff{Fraction} to return an object
 of class \ff{Float}. The method is still informal and is not defined in
 the requirements document, but when a requirements expert decides to make it
 formal and specify its details in a new use case, she has to make sure it
-returns an instance of class \ff{Float}. Otherwise, the compiler would
+returns an instance of the class \ff{Float}. Otherwise, the compiler would
 complain with an error.
 
 \subsection{Failures are handled by alternative flows}
 
 Every method in the object-oriented way may throw an exception, using a
-build-in method \ff{Fail since}. The method has one parameter of class
+build-in method \ff{Fail since}. The method has one parameter of the class
 \ff{Text}, which explains the reason. In the example in
-the Fig.~\ref{fig:example}, method ``calculates'' of class \ff{Fraction} may
+the Fig.~\ref{fig:example}, method ``calculates'' of the class \ff{Fraction} may
 throw an exception and it is handled by an alternative flow. In the language, all
 exceptions are checked, which means that they should be handled explicitly,
 by means of alternative flows of use cases.
@@ -440,7 +442,7 @@ rectangle split every empty part={}]
 \tikzstyle{comment} = [inner sep=0mm,fill=white,font={\scriptsize\ttfamily}]
 
 When semantic analysis is done the specification looks like an object of
-class \ff{SuD} that encapsulates other objects and methods. This object
+the class \ff{SuD} that encapsulates other objects and methods. This object
 hierarchy is convertible to UML diagrams~\citep{uml}. Specification in
 the Fig.~\ref{fig:example} would be converted to the following UML diagrams
 (to save space, the list is limited to the three most interesting
@@ -459,7 +461,7 @@ diagrams):
 \node[uml-class,below left=of sud] {User\nodepart{third}creates\\receives results\\fails};
 \node[uml-class,below=of sud] {Fraction\nodepart{third}calculates};
 \end{tikzpicture}
-\caption{UML class diagram for the sample project}
+\figcaption{UML class diagram for the sample project}
 \label{fig:uml-class}
 \end{figure}
 
@@ -478,7 +480,7 @@ diagrams):
 \path[draw,->,dashed] (fraction) -- node[midway,comment] {calculates} (quotient);
 \path[draw,->,dashed] (quotient) -- node[midway,comment] {receives results} (user);
 \end{tikzpicture}
-\caption{UML object diagram for the sample project}
+\figcaption{UML object diagram for the sample project}
 \label{fig:uml-object}
 \end{figure}
 
@@ -502,7 +504,7 @@ diagrams):
 \path [draw] (0.5,-4.7) -- (7,-4.7);
 \end{messcall}
 \end{sequencediagram}
-\caption{UML sequence diagram for ``divides two numbers'' method of class SuD of the sample project}
+\figcaption{UML sequence diagram for ``divides two numbers'' method of class SuD of the sample project}
 \label{fig:uml-seq}
 \end{figure}
 
@@ -537,7 +539,7 @@ for the class diagram.
   [...]
 </uml:Model>
 \end{ffcode}
-\caption{XMI representation of a UML diagram; a sample part}
+\figcaption{XMI representation of a UML diagram; a sample part}
 \label{fig:xmi}
 \end{figure}
 
@@ -566,7 +568,7 @@ The higher the ambiguity, the more system analysis is required for the
 requirements document to make it unambiguously understandable by everybody
 in a project. The ultimate goal of a system analyst is to break down
 requirements until a target ambiguity is reached. In the commercial projects
-explained in Section~\ref{sec:results}, the $A$ metric was used for the planning
+explained in the Sec.~\ref{sec:results}, the $A$ metric was used for the planning
 of RE activities. Every iteration a group of RE specialists had a goal of
 decreasing the ambiguity until it reached a given value. It was not clear at
 the beginning how much work that would take, but soon the RE team
@@ -610,7 +612,7 @@ Project duration, months                            & 7 & 26 & 11 \\
 Project budget, staff-months                        & 5.5 & 7.5 & 9.5 \\
 \hline
 \end{tabular}
-\caption{Empirically collected data from three commercial projects}
+\figcaption{Empirically collected data from three commercial projects}
 \label{table:numbers}
 \end{table}
 
@@ -655,7 +657,9 @@ engineers to understand key principles of ``object thinking''~\citep{west04},
 like ``everything is an object'' and ``objects expose behavior, not state.''
 Initial training was required in two projects.
 
-\bibliographystyle{abbrv}
+\bibliographystyle{ACM-Reference-Format}
+\raggedright
 \bibliography{main}
+\clearpage
 
 \end{document}
