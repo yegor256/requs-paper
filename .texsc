@@ -1,0 +1,5 @@
+--pws=aspell.en.pws
+--ignore=nospell
+--ignore=ffcode
+--ignore=settopmatter
+--ignore=ff,citet,citep
