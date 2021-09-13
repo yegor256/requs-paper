@@ -50,12 +50,12 @@ the experience obtained during its practical application. \end{abstract}
 
 Software Requirements Specification (SRS) should be correct, unambiguous,
 complete, consistent, ranked for importance and/or stability, verifiable,
-modifiable, and traceable~\citep{ieee830}. Many times, it was proven that an SRS
+modifiable, and traceable~\citep{ieee830}. Many times, it was demonstrated that an SRS
 document that lacks some of these properties has a high likelihood of
 becoming a root cause of scope and schedule problems in a
 project~\citep{wiegers03,ears09,chen09}.
 
-Natural Language (NL) is the main presentation means in industrial
+Natural Language (NL) is the main presentation mean in industrial
 requirements documents~\citep{kof10,sinha10}, mostly due to its flexibility.
 Very often, contributors to requirements specifications are not experts in
 requirements engineering (RE). Impreciseness and flexibility of NL, being
@@ -90,7 +90,7 @@ Lisp or other functional languages. However, as of today, object-oriented
 systems dominate, especially in enterprise applications domain.
 
 Second, they all require sequential flow of language constructs, while in
-modern agile software projects wiki pages is the most popular storage for
+modern Agile software projects wiki pages is one of the most popular storage for
 requirements documentation, instead of files or databases. Wiki pages, by
 definition, are not sorted and may contain pieces of requirements
 documentation that should be combined into a complete document in a random
@@ -104,22 +104,24 @@ and refine it later in a few iterations. This process, called ``progressive
 elaboration'' of requirements~\citep{pmbok4}, must be supported by a CNL.
 
 To overcome these drawbacks, a new language was introduced,
-implemented, and tested. The Sec.~\ref{sec:Requs} of
+implemented, and tested.
+Sec.~\ref{sec:Requs} of
 the article presents the language and gives a simple example of its use,
 specifying requirements of a sample software system.
-The Sec.~\ref{sec:lexical} briefly outlines lexical rules of the language.
-The Sec.~\ref{sec:syntax} describes the syntax using extended \nospell{Backus-Naur}
-form and gives a few practical examples. The Sec.~\ref{sec:semantic} outlines
+Sec.~\ref{sec:lexical} briefly outlines lexical rules of the language.
+Sec.~\ref{sec:syntax} describes the syntax using extended \nospell{Backus-Naur}
+form and gives a few practical examples.
+Sec.~\ref{sec:semantic} outlines
 a semantic layer of the compiler that is intended to detect vast majority
 of inconsistencies in a requirements document.
-The Sec.~\ref{sec:uml} gives an example of to-UML mapping implemented
+Sec.~\ref{sec:uml} gives an example of to-UML mapping implemented
 by the compiler.
-The Sec.~\ref{sec:ambiguity}
+Sec.~\ref{sec:ambiguity}
 presents a numeric metric that measures ambiguity in a requirements
 specification and could be used as a guidance for system analysts.
-The Sec.~\ref{sec:results} presents empirical results obtained from three
+Sec.~\ref{sec:results} presents empirical results obtained from three
 commercial Java web projects over the last few years.
-The Sec.~\ref{sec:conclusion} presents conclusions and observations made by
+Sec.~\ref{sec:conclusion} presents conclusions and observations made by
 the author.
 
 \section{Controlled Natural Language}
@@ -127,7 +129,7 @@ the author.
 
 It is an object-oriented CNL that resembles English and, because of that,
 can be read and understood by compilers, system analysts, end-users, and
-business people. The Fig.~\ref{fig:example} presents an example of a short
+business people. Fig.~\ref{fig:example} presents an example of a short
 requirements definition document that describes a calculator that asks its
 user for two floating point numbers and returns the result of their
 division.
@@ -183,7 +185,7 @@ and this is yet another important feature of the language. In the example clause
 at the tenth line, defining an alternative flow may appear before the use
 case itself. The compiler will understand them correctly.
 
-The Fig.~\ref{fig:java} contains a close equivalent program in Java.
+Fig.~\ref{fig:java} contains a close equivalent program in Java.
 
 \begin{figure}
 \begin{ffcode}
@@ -234,19 +236,15 @@ inventing (or borrowing) a method of quantification of NFRs.
 There are a few main lexical terms in Requs, which can be
 defined by regular expressions:
 
-\begin{grammar}
-<class> ::= `[A-Z][A-Za-z]+'
+\begin{ffcode*}{linenos=false}
+<class> ::= /[A-Z][A-Za-z]+/
+<word> ::= /[a-z]+/
+<use-case-ID> ::= /UC[0-9\\.]+/
+<flow-ID> ::= /[0-9]+/
+<informal> ::= /"([^"]|$\vert$|\\")+"/
+\end{ffcode*}
 
-<word> ::= `[a-z]+'
-
-<use-case-ID> ::= `UC[0-9\\.]+'
-
-<flow-ID> ::= `[0-9]+'
-
-<informal> ::= `"([^"]|\\")+"'
-\end{grammar}
-
-In the Fig.~\ref{fig:example}, the entities \ff{SuD}, \ff{Fraction}, \ff{Float}, and
+In Fig.~\ref{fig:example}, the entities \ff{SuD}, \ff{Fraction}, \ff{Float}, and
 \ff{User} are classes. They start with capital letters and contain only
 letters (both lowercase and capital). The \ff{user}, the \ff{fraction}, and
 the \ff{quotient} are the variables bound to instances of classes.
@@ -254,7 +252,7 @@ the \ff{quotient} are the variables bound to instances of classes.
 Besides, there are a few reserved words, which may have special meaning in
 certain places of the text, including \ff{the}, \ff{a}, \ff{includes},
 \ff{requires}, etc.
-A full list of them is defined below in the Sec.~\ref{sec:syntax}.
+A full list of them is defined below in Sec.~\ref{sec:syntax}.
 
 \section{Syntax Analysis}
 \label{sec:syntax}
@@ -264,14 +262,13 @@ languages). Every clause ends with a period, like English sentences. There
 are four types of clauses: class declaration, class construction, method
 declaration, and alternative flow declaration.
 
-\begin{grammar}
+\begin{ffcode*}{linenos=false}
 <SRS> ::= <clause>+
-
-<clause> ::= <class-declaration> \\
-| <class-construction> \\
-| <method-declaration> \\
-| <alternative-flow-declaration>
-\end{grammar}
+<clause> ::= <class-declaration>
+  |$\vert$| <class-construction>
+  |$\vert$| <method-declaration>
+  |$\vert$| <alternative-flow-declaration>
+\end{ffcode*}
 
 \subsection{Class Declaration}
 
@@ -279,15 +276,14 @@ Class declaration is a clause that declares a class as a sub-class of
 another class or as a standalone class. The central part of the clause is
 an \ff{is a} term:
 
-\begin{grammar}
-<class-declaration> ::= <class> <is-a> <parent-class>
+\begin{ffcode*}{linenos=false}
+<class-declaration> ::= <class>
+  <is-a> <parent-class>
+<parent-class> ::= <informal> |$\vert$| <class>
+<is-a> ::= `is' ( `a' |$\vert$| `an' )
+\end{ffcode*}
 
-<parent-class> ::= <informal> | <class>
-
-<is-a> ::= `is' ( `a' | `an' )
-\end{grammar}
-
-The second line in the Fig.~\ref{fig:example} declares the class \ff{Fraction}
+The second line in Fig.~\ref{fig:example} declares the class \ff{Fraction}
 without any super-class but with an informal description
 \ff{"math calculator"}.
 
@@ -297,19 +293,16 @@ Class construction is a clause that defines arguments of a class
 constructor, if necessary. By default, a constructor doesn't need any
 arguments:
 
-\begin{grammar}
-<class-construction> ::= <class> <includes> `:' <slots>
-
-<includes> ::= `includes' | `needs'
-
+\begin{ffcode*}{linenos=false}
+<class-construction> ::= <class> <includes>
+  `:' <slots>
+<includes> ::= `includes' |$\vert$| `needs'
 <slots> ::= <slot> ( `,' <slot> )*
-
 <slot> ::= <variable> ( `as' <class> )?
-
 <variable> ::= <word> `-s'?
-\end{grammar}
+\end{ffcode*}
 
-The Fig.~\ref{fig:example} defines constructor arguments only for
+Fig.~\ref{fig:example} defines constructor arguments only for
 the \ff{Fraction} class. The class \ff{User} don't have any arguments. The class
 \ff{SuD} is a pre-defined class without arguments. The class \ff{Float} is a
 pre-defined class with one argument.
@@ -325,25 +318,24 @@ two possible relationships types supported: one-to-one and one-to-many.
 
 Method declaration is a clause that defines a method for a class:
 
-\begin{grammar}
-<method-declaration> ::= <use-case-ID> `where' \\
+\begin{ffcode*}{linenos=false}
+<method-declaration> ::= <use-case-ID> `where'
 <class> <signature> `:' <flows>
-
-<signature> ::= ( <word>+ | <informal> ) \\
-<subject>? <using>?
-
-<subject> ::= <class> <binding>? | `the' <variable>
-
+<signature> ::= ( <word>+ |$\vert$| <informal> )
+  <subject>? <using>?
+<subject> ::= <class> <binding>?
+  |$\vert$| `the' <variable>
 <binding> ::= `(' `a' <variable> `)'
-
-<using> ::= `using' <subject> ( `and' <subject> )*
-
+<using> ::= `using' <subject>
+  ( `and' <subject> )*
 <flows> ::= <flow> ( `;' <flow> )+
-
-<flow> ::= <flow-ID> `.' \\
-( `The' <variable> <signature>
-| `Fail' `since' <informal> )
-\end{grammar}
+<flow> ::= <flow-ID> `.'
+  (
+    `The' <variable> <signature>
+    |$\vert$|
+    `Fail' `since' <informal>
+  )
+\end{ffcode*}
 
 For traceability, all methods have unique names across the entire
 SRS starting with the \ff{UC} (use case). In other words,
@@ -354,10 +346,9 @@ methods are use cases owned by classes.
 Alternative declaration is a clause that defines an alternative
 flow of a method:
 
-\begin{grammar}
-<alternative-flow-declaration> ::= <use-case-ID> `/' \\
-<flow-ID> `when' <informal> `:' <flows>
-\end{grammar}
+\begin{ffcode*}{linenos=false}
+<alternative-flow-declaration> ::= <use-case-ID> `/' <flow-ID> `when' <informal> `:' <flows>
+\end{ffcode*}
 
 Alternative flow explains exceptional situations in one of the
 flows of a method it refers to.
@@ -384,7 +375,7 @@ If any of these checks fail, the entire document is rejected.
 
 Every method call in every use case should either
 \begin{inparaenum}[\itshape a\upshape)]
-\item be informal (the 8th, 9th, and 11th lines in the example at the Fig.~\ref{fig:example}),
+\item be informal (the 8th, 9th, and 11th lines in the example at Fig.~\ref{fig:example}),
 \item formally refer to the method declared in a class, or
 \item construct an instance of a class using a built-in method \ff{creates} (the 7th line in the example).
 \end{inparaenum}
@@ -431,7 +422,7 @@ complain with an error.
 Every method in the object-oriented way may throw an exception, using a
 build-in method \ff{Fail since}. The method has one parameter of the class
 \ff{Text}, which explains the reason. In the example in
-the Fig.~\ref{fig:example}, method ``calculates'' of the class \ff{Fraction} may
+Fig.~\ref{fig:example}, method ``calculates'' of the class \ff{Fraction} may
 throw an exception and it is handled by an alternative flow. In the language, all
 exceptions are checked, which means that they should be handled explicitly,
 by means of alternative flows of use cases.
@@ -449,14 +440,14 @@ rectangle split every empty part={}]
 When semantic analysis is done the specification looks like an object of
 the class \ff{SuD} that encapsulates other objects and methods. This object
 hierarchy is convertible to UML diagrams~\citep{uml}. Specification in
-the Fig.~\ref{fig:example} would be converted to the following UML diagrams
+Fig.~\ref{fig:example} would be converted to the following UML diagrams
 (to save space, the list is limited to the three most interesting
 diagrams):
 
 \begin{itemize}
-\item Class diagram, in the Fig.~\ref{fig:uml-class}
-\item Object diagram, in the Fig.~\ref{fig:uml-object}
-\item Sequence diagram of ``divides two numbers'' method, in the Fig.~\ref{fig:uml-seq}
+\item Class diagram, in Fig.~\ref{fig:uml-class}
+\item Object diagram, in Fig.~\ref{fig:uml-object}
+\item Sequence diagram of ``divides two numbers'' method, in Fig.~\ref{fig:uml-seq}
 \end{itemize}
 
 \begin{figure}
@@ -515,7 +506,7 @@ diagrams):
 
 Every UML diagram is a formal interoperable document in XMI~\citep{xmi} that
 can be rendered in web, in \LaTeX, in PDF, or translated to Java or any
-other object-oriented language. The Fig.~\ref{fig:xmi} shows an example XMI
+other object-oriented language. Fig.~\ref{fig:xmi} shows an example XMI
 for the class diagram.
 
 \begin{figure}
@@ -559,12 +550,12 @@ number of methods:
 A = \frac{M_{\mbox{informal}}}{M_{\mbox{total}}},\quad 0 \le A \le 1
 \end{equation}
 
-In the Fig.~\ref{fig:example}, ambiguity equals to $3/4$ since there are four
+In Fig.~\ref{fig:example}, ambiguity equals to $3/4$ since there are four
 methods in total and three of them are defined informally.
 
 A method is formally defined when its signature consists of one specially
 reserved verb \ff{creates} and an optional list of constructor arguments,
-as in the seventh line of the Fig.~\ref{fig:example}. A formally defined
+as in the seventh line of Fig.~\ref{fig:example}. A formally defined
 method doesn't have any ambiguity since it is absolutely clear what is
 expected as its input and output. All it does is instantiate a new object
 and bind it to a variable. In Java that would mean calling a constructor.
@@ -573,7 +564,7 @@ The higher the ambiguity, the more system analysis is required for the
 requirements document to make it unambiguously understandable by everybody
 in a project. The ultimate goal of a system analyst is to break down
 requirements until a target ambiguity is reached. In the commercial projects
-explained in the Sec.~\ref{sec:results}, the $A$ metric was used for the planning
+explained in Sec.~\ref{sec:results}, the $A$ metric was used for the planning
 of RE activities. Every iteration a group of RE specialists had a goal of
 decreasing the ambiguity until it reached a given value. It was not clear at
 the beginning how much work that would take, but soon the RE team
