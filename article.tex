@@ -18,6 +18,7 @@
 \setlength\headheight{24pt}
 \newcommand\figcaption[1]{\Description{#1}\caption{#1}}
 \raggedbottom
+\tolerance=2000
 
 \begin{document}
 
@@ -302,7 +303,7 @@ arguments:
 <variable> ::= <word> `-s'?
 \end{ffcode*}
 
-Fig.~\ref{fig:example} defines constructor arguments only for
+Fig.~\ref{fig:example} defines the arguments of the constructor only for
 the \ff{Fraction} class. The class \ff{User} don't have any arguments. The class
 \ff{SuD} is a pre-defined class without arguments. The class \ff{Float} is a
 pre-defined class with one argument.
@@ -648,7 +649,7 @@ programmers-oriented compilers of Java or C++, has to produce user friendly
 error messages (and warnings). In further versions of the language, a much richer
 reporting is going to be implemented.
 
-Third, developing a requirements specification with the language requires RE
+Third, developing requirements specification with the language requires RE
 engineers to understand key principles of ``object thinking''~\citep{west04},
 like ``everything is an object'' and ``objects expose behavior, not state.''
 Initial training was required in two projects.
