@@ -1,4 +1,4 @@
-\documentclass[sigplan,10pt]{acmart}
+\documentclass[sigplan,10pt,screen]{acmart}
 % \settopmatter{printfolios=false,printccs=false,printacmref=false}
 \usepackage[underline=true,rounded corners=false]{pgf-umlsd} % for UML sequence diagrams
 \usepackage[square]{syntax} % for BNF grammar
@@ -8,6 +8,7 @@
 \usepackage{paralist} % for inline itemized lists env{inparaenum}
 \usepackage{natbib} % for customization of bibliography headers
 \usepackage{ffcode}
+\usepackage{flushend}
 \usepackage{tikz}
   \usetikzlibrary{shapes,arrows,shadows}
   \usetikzlibrary{decorations.pathmorphing}
@@ -27,9 +28,17 @@
 \orcid{0000-0001-6370-0678}
 \email{yegor256@gmail.com}
 \affiliation{\city{Moscow}\country{Russia}}
+
 \setcopyright{acmcopyright}
-\copyrightyear{2021}
+\acmPrice{15.00}
 \acmDOI{10.1145/3486949.3486963}
+\acmYear{2021}
+\copyrightyear{2021}
+\acmSubmissionID{splashws21bcncmain-p41-p}
+\acmISBN{978-1-4503-9125-2/21/10}
+\acmConference[BCNC '21]{Proceedings of the 1st ACM SIGPLAN International Workshop on Beyond Code: No Code}{October 17, 2021}{Chicago, IL, USA}
+\acmBooktitle{Proceedings of the 1st ACM SIGPLAN International Workshop on Beyond Code: No Code (BCNC '21), October 17, 2021, Chicago, IL, USA}
+
 \begin{CCSXML}
 <ccs2012>
 <concept>
@@ -40,10 +49,6 @@
 </ccs2012>
 \end{CCSXML}
 \ccsdesc[500]{Software and its engineering~Requirements analysis}
-\acmConference[BCNC 2021]
-  {1st ACM SIGPLAN International Workshop on Beyond Code: No Code}
-  {October 17, 2021}
-  {Chicago, IL, US}
 \keywords{Requirements, Natural Language Processing}
 
 \begin{abstract} Natural language is the dominant form of writing software requirements.
@@ -669,7 +674,7 @@ error messages (and warnings). In further versions of the language, a much riche
 reporting is going to be implemented.
 
 Third, developing requirements specification with the language requires RE
-engineers to understand key principles of ``object thinking''~\citep{west04},
+engineers to understand key principles of ``object thinking''~\citep{west04,eo1},
 like ``everything is an object'' and ``objects expose behavior, not state.''
 Initial training was required in two projects.
 
