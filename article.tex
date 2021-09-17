@@ -1,5 +1,5 @@
-\documentclass[sigplan,10pt,nonacm=true]{acmart}
-\settopmatter{printfolios=false,printccs=false,printacmref=false}
+\documentclass[sigplan,10pt]{acmart}
+% \settopmatter{printfolios=false,printccs=false,printacmref=false}
 \usepackage[underline=true,rounded corners=false]{pgf-umlsd} % for UML sequence diagrams
 \usepackage[square]{syntax} % for BNF grammar
   \setlength{\grammarparsep}{1pt}
@@ -26,7 +26,22 @@
 \author{Yegor Bugayenko}{}{}
 \email{yegor256@gmail.com}
 \affiliation{\institution{}\city{Moscow}\country{Russia}}
-\ccsdesc[100]{Requirements Engineering}
+\setcopyright{acmcopyright}
+\copyrightyear{2021}
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10011074.10011075.10011076</concept_id>
+<concept_desc>Software and its engineering~Requirements analysis</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+\ccsdesc[500]{Software and its engineering~Requirements analysis}
+\acmConference[BCNC 2021]
+  {1st ACM SIGPLAN International Workshop on Beyond Code: No Code}
+  {October 17, 2021}
+  {Chicago, IL, US}
 \keywords{Requirements, Natural Language Processing}
 
 \begin{abstract} Natural language is the dominant form of writing software requirements.
@@ -348,7 +363,9 @@ Alternative declaration is a clause that defines an alternative
 flow of a method:
 
 \begin{ffcode*}{linenos=false}
-<alternative-flow-declaration> ::= <use-case-ID> `/' <flow-ID> `when' <informal> `:' <flows>
+<alternative-flow-declaration> ::=
+  <use-case-ID> `/' <flow-ID>
+  `when' <informal> `:' <flows>
 \end{ffcode*}
 
 Alternative flow explains exceptional situations in one of the
