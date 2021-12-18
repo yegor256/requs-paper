@@ -1,14 +1,8 @@
-\documentclass[sigplan,10pt,screen]{acmart}
-% \settopmatter{printfolios=false,printccs=false,printacmref=false}
+\documentclass[sigplan,screen]{acmart}
 \usepackage[underline=true,rounded corners=false]{pgf-umlsd} % for UML sequence diagrams
-\usepackage[square]{syntax} % for BNF grammar
-  \setlength{\grammarparsep}{1pt}
-  \setlength{\grammarindent}{2em}
 \usepackage{array} % complex structure of TABULAR-s
 \usepackage{paralist} % for inline itemized lists env{inparaenum}
-\usepackage{natbib} % for customization of bibliography headers
-\usepackage{ffcode}
-\usepackage{flushend}
+\usepackage[nonumbers,noframes]{ffcode}
 \usepackage{tikz}
   \usetikzlibrary{shapes,arrows,shadows}
   \usetikzlibrary{decorations.pathmorphing}
@@ -16,10 +10,8 @@
   \usetikzlibrary{calc}
 
 \newcommand{\nospell}[1]{#1}
-\setlength\headheight{24pt}
 \newcommand\figcaption[1]{\Description{#1}\caption{#1}}
-\raggedbottom
-\tolerance=2000
+% \tolerance=2000
 
 \begin{document}
 
@@ -27,7 +19,7 @@
 \author{Yegor Bugayenko}
 \orcid{0000-0001-6370-0678}
 \email{yegor256@gmail.com}
-\affiliation{\city{Moscow}\country{Russia}}
+\affiliation{\institution{Huawei}\city{Moscow}\country{Russia}}
 
 \setcopyright{acmcopyright}
 \acmPrice{15.00}
@@ -150,7 +142,8 @@ the author.
 \section{Controlled Natural Language}
 \label{sec:Requs}
 
-It is an object-oriented CNL that resembles English and, because of that,
+Requs\footnote{\url{https://www.requs.org}}
+is an object-oriented CNL that resembles English and, because of that,
 can be read and understood by compilers, system analysts, end-users, and
 business people. Fig.~\ref{fig:example} presents an example of a short
 requirements definition document that describes a calculator that asks its
@@ -396,7 +389,7 @@ The main goal of semantic analysis in the language is to make sure that:
 \end{inparaenum}
 If any of these checks fail, the entire document is rejected.
 
-\subsection{Method calls match declarations}
+\subsection{Method Calls Match Declarations}
 
 Every method call in every use case should either
 \begin{inparaenum}[\itshape a\upshape)]
@@ -412,7 +405,7 @@ the requirements development phase --- but very popular during requirements
 management and maintenance --- when one part of the document is updated aside
 from another part.
 
-\subsection{Object creating have necessary constructor arguments}
+\subsection{Object Creating Have Necessary Constructor Arguments}
 
 Every time an object is instantiated using the \ff{creates} method,
 the compiler checks that all required parameters of required classes are
@@ -422,7 +415,7 @@ during requirements maintenance and refinement. In the example, class
 create a fraction with just one parameter or two parameters of classes other
 than the \ff{Float} would be rejected by the compiler.
 
-\subsection{Variable bindings precede their usage}
+\subsection{Variable Bindings Precede Their Usage}
 
 A variable is declared and bound to its value by means of an article
 \ff{a}. The seventh line of the example declares a variable
@@ -431,7 +424,7 @@ line). If, by mistake, variable declaration is removed from the first step
 of the use case or the entire step is deleted, compilation will fail.
 Consistency of the document is ensured by this constraint.
 
-\subsection{Methods return objects of required classes}
+\subsection{Methods Return Objects of Required Classes}
 
 Similar to the check of parameter classes, every returned object is verified
 for compliance with the class expected. The eighth line of the example
@@ -442,7 +435,7 @@ formal and specify its details in a new use case, she has to make sure it
 returns an instance of the class \ff{Float}. Otherwise, the compiler would
 complain with an error.
 
-\subsection{Failures are handled by alternative flows}
+\subsection{Failures Are Handled by Alternative Flows}
 
 Every method in the object-oriented way may throw an exception, using a
 build-in method \ff{Fail since}. The method has one parameter of the class
@@ -619,6 +612,8 @@ The language was used in three commercial projects. The numbers
 empirically collected are presented in Table~\ref{table:numbers}.
 
 \begin{table}
+\figcaption{Empirically collected data from three commercial projects}
+\label{table:numbers}
 \begin{tabular}{>{\raggedright}p{14em}rrr}
                                             & $p_1$ & $p_2$ & $p_3$ \\
 \hline
@@ -633,8 +628,6 @@ Project duration, months                            & 7 & 26 & 11 \\
 Project budget, staff-months                        & 5.5 & 7.5 & 9.5 \\
 \hline
 \end{tabular}
-\figcaption{Empirically collected data from three commercial projects}
-\label{table:numbers}
 \end{table}
 
 The results collected from three software projects demonstrated that
@@ -678,9 +671,236 @@ engineers to understand key principles of ``object thinking''~\citep{west04,eo1}
 like ``everything is an object'' and ``objects expose behavior, not state.''
 Initial training was required in two projects.
 
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{18}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[\protect\citeauthoryear{??}{ste}{2005}]%
+        {ste05}
+ \bibinfo{year}{2005}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{ASD Simplified Technical English.
+  International specification for the preparation of maintenance documentation
+  in a controlled language}}.
+\newblock Number Specification ASD-STE100. \bibinfo{publisher}{Simplified
+  Technical English Maintenance Group (STEMG)}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{uml}{2005}]%
+        {uml}
+ \bibinfo{year}{2005}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Unified Modeling Language:
+  Superstructure}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{Object
+  Management Group}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{??}{pmb}{2008}]%
+        {pmbok4}
+ \bibinfo{year}{2008}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Project Management Body of Knowledge,
+  Guide} (\bibinfo{edition}{4th} ed.)}.
+\newblock \bibinfo{publisher}{Project Management Institute}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Bugayenko}{Bugayenko}{2016}]%
+        {eo1}
+\bibfield{author}{\bibinfo{person}{Yegor Bugayenko}.}
+  \bibinfo{year}{2016}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Elegant Objects}}.
+  Vol.~\bibinfo{volume}{1}.
+\newblock \bibinfo{publisher}{Amazon}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Chen}{Chen}{2009}]%
+        {chen09}
+\bibfield{author}{\bibinfo{person}{Betty~H.C. Chen}.}
+  \bibinfo{year}{2009}\natexlab{}.
+\newblock \showarticletitle{Current and Future Research Directions in
+  Requirements Engineering}. In \bibinfo{booktitle}{\emph{Design Requirements
+  Engineering: A Ten-Year Perspective In Design Requirements Engineering: A
+  Ten-Year Perspective}}, Vol.~\bibinfo{volume}{14}. \bibinfo{pages}{11--43}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Clark, Harrison, Jenkins, Thompson, and
+  Wo-jcik}{Clark et~al\mbox{.}}{2005}]%
+        {clark05}
+\bibfield{author}{\bibinfo{person}{P. Clark}, \bibinfo{person}{P. Harrison},
+  \bibinfo{person}{T. Jenkins}, \bibinfo{person}{J. Thompson}, {and}
+  \bibinfo{person}{R.~H. Wo-jcik}.} \bibinfo{year}{2005}\natexlab{}.
+\newblock \showarticletitle{Acquiring and Using World Knowledge Using a
+  Restricted Subset of English}. In \bibinfo{booktitle}{\emph{FLAIRS}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Cockburn}{Cockburn}{2001}]%
+        {cockburn01}
+\bibfield{author}{\bibinfo{person}{Alistair Cockburn}.}
+  \bibinfo{year}{2001}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Writing Effective Use Cases}}.
+\newblock \bibinfo{publisher}{Addison-Wesley}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Fuchs, Kaljurand, and Schneider}{Fuchs
+  et~al\mbox{.}}{2006}]%
+        {ace06}
+\bibfield{author}{\bibinfo{person}{Norbert~E. Fuchs}, \bibinfo{person}{Kaarel
+  Kaljurand}, {and} \bibinfo{person}{Gerold Schneider}.}
+  \bibinfo{year}{2006}\natexlab{}.
+\newblock \showarticletitle{{Attempto Controlled English Meets the Challenges
+  of Knowledge Representation, Reasoning, Interoperability and User
+  Interfaces}}. In \bibinfo{booktitle}{\emph{FLAIRS}}. Department of
+  Informatics \& Institute of Computational Linguistics.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{IEEE}{IEEE}{1998}]%
+        {ieee830}
+\bibfield{author}{\bibinfo{person}{IEEE}.} \bibinfo{year}{1998}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Recommended Practice for Software
+  Requirements Specifications}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport} IEEE Std 830-1998.
+  \bibinfo{institution}{The Institute of Electrical and Electronics Engineers}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Kof}{Kof}{2010}]%
+        {kof10}
+\bibfield{author}{\bibinfo{person}{L. Kof}.} \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{From Requirements Documents to System Models: A
+  Tool for Interactive Semi-Automatic Translation}. In
+  \bibinfo{booktitle}{\emph{18th IEEE International Requirements Engineering
+  Conference (RE)}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Mavin, Wilkinson, Harwood, and Novak}{Mavin
+  et~al\mbox{.}}{2009}]%
+        {ears09}
+\bibfield{author}{\bibinfo{person}{Alistair Mavin}, \bibinfo{person}{Philip
+  Wilkinson}, \bibinfo{person}{Adrian Harwood}, {and} \bibinfo{person}{Mark
+  Novak}.} \bibinfo{year}{2009}\natexlab{}.
+\newblock \showarticletitle{{EARS (Easy Approach to Requirements Syntax)}}. In
+  \bibinfo{booktitle}{\emph{17th IEEE International Requirements Engineering
+  Conference ({RE})}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Moynihan}{Moynihan}{2000}]%
+        {moynihan00}
+\bibfield{author}{\bibinfo{person}{Tony Moynihan}.}
+  \bibinfo{year}{2000}\natexlab{}.
+\newblock \showarticletitle{`Requirements-uncertainty': should it be a latent,
+  aggregate or profile construct?}. In \bibinfo{booktitle}{\emph{Australian
+  Software Engineering Conference}}. \bibinfo{pages}{181--188}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{OMG}{OMG}{2011}]%
+        {xmi}
+\bibfield{author}{\bibinfo{person}{OMG}.} \bibinfo{year}{2011}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{{MOF} 2.0/{XMI} Mapping, Version 2.4.1}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{Object
+  Management Group}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Schwitter}{Schwitter}{[n.\,d.]}]%
+        {peng}
+\bibfield{author}{\bibinfo{person}{Rolf Schwitter}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{Processable {ENGlish}}.
+\newblock
+\newblock
+\urldef\tempurl%
+\url{http://web.science.mq.edu.au/~rolfs/peng/}
+\showURL{%
+\tempurl}
+
+
+\bibitem[\protect\citeauthoryear{Sinha, Paradkar, Takeuchi, and Nakamura}{Sinha
+  et~al\mbox{.}}{2010}]%
+        {sinha10}
+\bibfield{author}{\bibinfo{person}{A. Sinha}, \bibinfo{person}{A. Paradkar},
+  \bibinfo{person}{H. Takeuchi}, {and} \bibinfo{person}{T. Nakamura}.}
+  \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{Extending Automated Analysis of Natural Language
+  Use Cases to Other Languages}. In \bibinfo{booktitle}{\emph{18th IEEE
+  International Requirements Engineering Conference (RE), 2010}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{West}{West}{2004}]%
+        {west04}
+\bibfield{author}{\bibinfo{person}{David West}.}
+  \bibinfo{year}{2004}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Object Thinking}}.
+\newblock \bibinfo{publisher}{Microsoft Press}.
+\newblock
+
+\newpage
+
+\bibitem[\protect\citeauthoryear{Wiegers}{Wiegers}{2003}]%
+        {wiegers03}
+\bibfield{author}{\bibinfo{person}{Karl Wiegers}.}
+  \bibinfo{year}{2003}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Software Requirements, Second Edition}}.
+\newblock \bibinfo{publisher}{{Microsoft Press}}.
+\newblock
+\showISBNx{0735618798}
+
+
+\bibitem[\protect\citeauthoryear{Woodcock and Davies}{Woodcock and
+  Davies}{1996}]%
+        {woodcock96}
+\bibfield{author}{\bibinfo{person}{J. Woodcock} {and} \bibinfo{person}{J.
+  Davies}.} \bibinfo{year}{1996}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Using Z-Specification, Refinement and
+  Proof}}.
+\newblock \bibinfo{publisher}{Prentice Hall}.
+\newblock
+
+\end{thebibliography}
 \bibliographystyle{ACM-Reference-Format}
-\raggedright
-\bibliography{main}
-\clearpage
 
 \end{document}
