@@ -1,3 +1,5 @@
+<img src="https://github.com/yegor256/requs/raw/master/logo.svg" width="128" />
+
 This is a more or less formal description
 of [REQUS](https://github.com/yegor256/requs).
 
